@@ -3,7 +3,6 @@
 `MsktHMM` adds **uMST (unrestricted multivariate skew-t)** emissions on top of
 [`hmmlearn`](https://github.com/hmmlearn/hmmlearn):
 
-- emission distribution in each state: **multivariate skew-t (Sahu–Dey–Branco, 2003)**  
 - plugged into the standard `hmmlearn` forward–backward / Viterbi / EM framework  
 - works on **Windows** (prebuilt EMMIXskew DLLs included, or build locally)  
 - works on **Linux** (build EMMIXskew `.so` locally)
@@ -42,7 +41,7 @@ MsktHMM relies on the **EMMIXskew** Fortran/C library to:
 
 * evaluate multivariate skew-t densities,
 * compute the truncated-t expectations needed in the E-step,
-* implement the closed-form M-step of the Sahu–Dey–Branco uMST model.
+* implement the closed-form M-step.
 
 At runtime, `mskt_hmm.native` tries to load:
 
@@ -80,9 +79,7 @@ src\mskt_hmm\EMMIXskew_dll\libgcc_s_seh-1.dll
 src\mskt_hmm\EMMIXskew_dll\libwinpthread-1.dll
 ```
 
-> Note: the ZIP may also contain additional files (e.g. an old `_hmmc*.pyd`);
-> these are ignored by MsktHMM. What really matters is that
-> `EMMIXskew_dll/libemmixskew.dll` and its dependencies end up under `mskt_hmm`.
+
 
 You can test the loading of the library with:
 
@@ -202,30 +199,17 @@ Expand-Archive -Path .\src\mskt_hmm\tests\tests_MsktHMM\data_test\test_single_st
                -DestinationPath .\src\mskt_hmm\tests\tests_MsktHMM\data_test -Force
 ```
 
-On Linux:
-
-```bash
-unzip -o src/mskt_hmm/tests/tests_MsktHMM/data_test/test_multi_state.zip \
-      -d src/mskt_hmm/tests/tests_MsktHMM/data_test
-
-unzip -o src/mskt_hmm/tests/tests_MsktHMM/data_test/test_single_state_equivalence.zip \
-      -d src/mskt_hmm/tests/tests_MsktHMM/data_test
-```
 
 ---
 
 
 ## 4) Relationship with `hmmlearn`
 
-This project **does not** vendor or modify `hmmlearn` anymore:
+This project **does not** vendor or modify `hmmlearn` : `hmmlearn` is installed as a normal dependency via `pip`
+MsktHMM only provides:
 
-* `hmmlearn` is installed as a normal dependency via `pip`
-* its C extension (`_hmmc*.pyd` / `_hmmc*.so`) comes from the official wheel
-* MsktHMM only provides:
-
-  * a new HMM class with uMST emissions (inside the `mskt_hmm` package)
-  * the native EMMIXskew runtime (`libemmixskew`) used to compute uMST densities
-    and expectations efficiently
+* a new HMM class with uMST emissions (inside the `mskt_hmm` package)
+* the native EMMIXskew runtime (`libemmixskew`) used to compute uMST densities and expectations efficiently
 
 You keep using `hmmlearn` as usual, and import the uMST HMM from `mskt_hmm`.
 
@@ -236,7 +220,7 @@ from mskt_hmm.mskt_hmm import MsktHMM
 
 hmm = MsktHMM(
     n_components=3,        # number of hidden states
-    n_features=d,          # dimension of the observation vectors
+    n_features=2,          # dimension of the observation vectors
     # other params as in MsktHMM class
 )
 
@@ -248,13 +232,6 @@ hmm.fit(X, lengths=lengths)
 ## 5) Run tests and demo
 
 Activate your virtual environment and run:
-
-```bash
-# from project root
-pytest src/mskt_hmm/tests/tests_MsktHMM
-```
-
-On Windows you can also use the convenience script:
 
 ```powershell
 .\run_mskt_tests.bat
@@ -281,7 +258,7 @@ check that:
 
 * `mskt_hmm/EMMIXskew_dll/libemmixskew.(dll|so)` exists in the installed package
   (or under `src/mskt_hmm/EMMIXskew_dll` when running from source);
-* on Windows, all DLLs listed in section **3.a.2** are present in the same folder;
+* on Windows, all DLLs listed in section **2.a** are present in the same folder;
 * you can successfully run:
 
   ```bash
@@ -307,9 +284,7 @@ The current implementation of `MsktHMM` has a few important constraints:
 - **Monotone ordering of state means (no mixed ordering)**  
   With the current initialization strategy, the fitted mean vectors are constrained to be *component-wise ordered* across states.  
   In other words, for each feature dimension \(j\), the means satisfy
-  \[
-  \mu^{(0)}_j > \mu^{(1)}_j > \mu^{(2)}_j,
-  \]
+  $\mu^{(0)}_j > \mu^{(1)}_j > \mu^{(2)}_j$ ,
   so you cannot have “crossed” or mixed orderings (e.g. one state larger on feature 0 but smaller on feature 1).
 
 - **Emission dimension restricted to 2 or 3**  
@@ -317,7 +292,7 @@ The current implementation of `MsktHMM` has a few important constraints:
 
 - **Initialization hyperparameters not yet exposed in the public API**  
   The initializer uses internal hyperparameters such as `min_seg` (minimum segment length after merging) and `med_win` (median filter window size).  
-  These are currently fixed inside the initializer and **cannot yet be set at object construction time**. Exposing them as constructor arguments is a planned improvement, especially for users who need to tune the initializer for data with more frequent state changes (i.e. transition matrices with lower self-transition probabilities on the diagonal).
+  These are currently fixed inside the initializer and **cannot yet be set at object construction time**. Exposing them as constructor arguments is a planned improvement, especially for users who need to tune the initializer for data with highly frequent state changes (i.e. transition matrices with lower self-transition probabilities on the diagonal).
 
 ```
 
