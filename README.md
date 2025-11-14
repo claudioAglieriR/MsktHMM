@@ -8,6 +8,11 @@
 - works on **Windows** (prebuilt EMMIXskew DLLs included, or build locally)  
 - works on **Linux** (build EMMIXskew `.so` locally)
 
+
+Regarding emissions: 
+- emission distribution in each state: **multivariate skew-t (Sahu–Dey–Branco, 2003)** using the hierarchical representation and truncated-t expectations. 
+- the EM framework uses the C and Fortran code of EMMIXskew, a package for the fitting of mixture of canonical fundamental skew t-distributions. EMMIXskew is developed by Sharon X. Lee and Geoffrey J. McLachlan.
+
 ---
 
 ## 1) Prerequisites
@@ -287,12 +292,32 @@ check that:
 
 ## 7) Notes
 
-* EM for uMST follows **Sahu–Dey–Branco (2003)** (unrestricted skew-t),
-  using the hierarchical representation and truncated-t expectations.
 * The HMM layer reuses `hmmlearn`’s forward–backward and Viterbi core, so
   you get the usual API (`fit`, `score`, `predict`, `sample`, …).
 * macOS is not officially supported here, but you can adapt the Linux build
   commands to produce a `.dylib` if you have a Fortran toolchain available.
+
+## 8) Current Model Limitations
+
+The current implementation of `MsktHMM` has a few important constraints:
+
+- **Fixed number of states (3 only)**  
+  The model currently manages HMMs with exactly three hidden states. Other numbers of states are not supported yet.
+
+- **Monotone ordering of state means (no mixed ordering)**  
+  With the current initialization strategy, the fitted mean vectors are constrained to be *component-wise ordered* across states.  
+  In other words, for each feature dimension \(j\), the means satisfy
+  \[
+  \mu^{(0)}_j > \mu^{(1)}_j > \mu^{(2)}_j,
+  \]
+  so you cannot have “crossed” or mixed orderings (e.g. one state larger on feature 0 but smaller on feature 1).
+
+- **Emission dimension restricted to 2 or 3**  
+  The multi-stage initializer is currently implemented only for 2-dimensional or 3-dimensional emission vectors. Other feature dimensions are not supported by this initializer, because it wouldn't lead to stable results.
+
+- **Initialization hyperparameters not yet exposed in the public API**  
+  The initializer uses internal hyperparameters such as `min_seg` (minimum segment length after merging) and `med_win` (median filter window size).  
+  These are currently fixed inside the initializer and **cannot yet be set at object construction time**. Exposing them as constructor arguments is a planned improvement, especially for users who need to tune the initializer for data with more frequent state changes (i.e. transition matrices with lower self-transition probabilities on the diagonal).
 
 ```
 

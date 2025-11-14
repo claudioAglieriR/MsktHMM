@@ -1040,6 +1040,14 @@ class MsktHMM(BaseMsktHMM, BaseHMM):
         verbose : bool
             for debugging
         """
+        _, p = X.shape
+        if p not in (2, 3):
+            raise ValueError(
+                f"current initialization of MsktHMM leads to stable results" 
+                f"only for 2 or 3 features, "
+                f"but got X with p = {p}."
+            )
+
         if verbose is None:
             verbose = bool(getattr(self, "verbose", False))
 
