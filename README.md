@@ -212,13 +212,13 @@ Expand-Archive -Path .\src\mskt_hmm\tests\tests_MsktHMM\data_test\test_single_st
 
 ## 4) Run tests and demo
 
-Activate your virtual environment and run:
+If you want to run the tests, activate your virtual environment and run:
 
 ```powershell
 .\run_mskt_tests.bat
 ```
 
-To experiment interactively, open the Jupyter notebook:
+If you want to experiment interactively, open the Jupyter notebook:
 
 ```bash
 jupyter notebook mskt_hmm_demo.ipynb
@@ -248,14 +248,9 @@ check that:
 
 ---
 
-## 6) Notes
 
-* The HMM layer reuses `hmmlearn`’s forward–backward and Viterbi core, so
-  you get the usual API (`fit`, `score`, `predict`, `sample`, …).
-* macOS is not officially supported here, but you can adapt the Linux build
-  commands to produce a `.dylib` if you have a Fortran toolchain available.
 
-## 7) Current Model Limitations
+## 6) Current Model Limitations
 
 The current implementation of `MsktHMM` has a few important constraints, because of the chosen initialization procedure:
 
