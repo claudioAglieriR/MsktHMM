@@ -1007,7 +1007,10 @@ class MsktHMM(BaseMsktHMM, BaseHMM):
             return self._init_single(X)
         self._init_robust_segments(X)
 
-
+    # TODO: add min_seg and med_win parameters as initialization parameters for the object
+    # A possible improvement for this repository is to expose the initialization hyperparameters
+    # min_seg and med_win, so that the robust initializer can be tuned for data with more
+    # frequent state changes.
     def _init_robust_segments(self, X: np.ndarray, *, med_win: int = 51,
                           min_seg: int = 180, trim_q: float = 0.98, verbose:bool =False ) -> None:
         """
@@ -1027,10 +1030,11 @@ class MsktHMM(BaseMsktHMM, BaseHMM):
         ----------
         X : ndarray, shape (n, p)
             Data matrix.
-        med_win : int
-            Median filter window for smoothing.
+
         min_seg : int
             Minimum segment length after merging.
+        med_win : int
+            Median filter window size (will be forced to odd).
         trim_q : float
             Trimming quantile for robust fits.
         verbose : bool
