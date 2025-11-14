@@ -1,6 +1,0 @@
-.rs.restartR()
-assign("...length", function(...) length(list(...)), envir = baseenv())
-setwd("C:/opt/workspace/R/EMMIXskew103emmix2018")
-library(EMMIXskew)
-library(mvtnorm)
-source("EMMIXskew/test_fit_2.R")
