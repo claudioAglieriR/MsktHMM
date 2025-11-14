@@ -1,4 +1,3 @@
-````markdown
 # MsktHMM : HMM with multivariate skew-t emissions
 
 `MsktHMM` adds **uMST (unrestricted multivariate skew-t)** emissions on top of
@@ -41,39 +40,8 @@ pip install -e .
 
 ---
 
-## 2) Relationship with `hmmlearn`
 
-This project **does not** vendor or modify `hmmlearn` anymore (strada B):
-
-* `hmmlearn` is installed as a normal dependency via `pip`
-* its C extension (`_hmmc*.pyd` / `_hmmc*.so`) comes from the official wheel
-* MsktHMM only provides:
-
-  * a new HMM class with uMST emissions (inside the `mskt_hmm` package)
-  * the native EMMIXskew runtime (`libemmixskew`) used to compute uMST densities
-    and expectations efficiently
-
-You keep using `hmmlearn` as usual, and import the uMST HMM from `mskt_hmm`.
-
-Example (adjust the class name if needed):
-
-```python
-from mskt_hmm.mskt_hmm import MsktHMM   # or your concrete class name
-
-hmm = MsktHMM(
-    n_components=3,        # number of hidden states
-    n_features=d,          # dimension of the observation vectors
-    # other params as in hmmlearn.HMM classes
-)
-
-hmm.fit(X, lengths=lengths)
-logprob = hmm.score(X)
-states = hmm.predict(X)
-```
-
----
-
-## 3) Native EMMIXskew backend
+## 2) Native EMMIXskew backend
 
 MsktHMM relies on the **EMMIXskew** Fortran/C library to:
 
@@ -93,7 +61,7 @@ There are two ways to obtain these libraries:
 1. use the **prebuilt natives (Windows)**
 2. build them locally from `src/mskt_hmm/EMMIXskew/src` (Windows or Linux)
 
-### 3.a) Windows – use the prebuilt natives (recommended)
+### 2.a) Windows – use the prebuilt natives (recommended)
 
 From the **repository root**:
 
@@ -130,7 +98,7 @@ py -c "import mskt_hmm.native as n; print('EMMIX lib loaded:', bool(n.LIB))"
 
 If this prints `EMMIX lib loaded: True`, the native backend is ready.
 
-#### 3.a.2) Windows – build EMMIXskew DLLs manually (only if prebuilt DLLs do not work)
+#### 2.a.2) Windows – build EMMIXskew DLLs manually (only if prebuilt DLLs do not work)
 
 If the prebuilt DLLs do not load on your setup (e.g. OpenBLAS mismatch), you
 can rebuild `libemmixskew.dll` yourself using **MSYS2 UCRT64**.
@@ -185,7 +153,7 @@ ntldd -v /c/opt/workspace/python/MsktHMM/src/mskt_hmm/EMMIXskew_dll/libemmixskew
 
 ---
 
-### 3.b) Linux – build the `.so`
+### 2.b) Linux – build the `.so`
 
 On Linux you build `libemmixskew.so` from the same sources.
 
@@ -225,7 +193,7 @@ python -c "import mskt_hmm.native as n; print('EMMIX lib loaded:', bool(n.LIB))"
 
 ---
 
-## 4) Unpack test data
+## 3) Unpack test data
 
 Some tests use pre-generated data stored as ZIP archives.
 
@@ -251,6 +219,37 @@ unzip -o src/mskt_hmm/tests/tests_MsktHMM/data_test/test_single_state_equivalenc
 
 ---
 
+
+## 4) Relationship with `hmmlearn`
+
+This project **does not** vendor or modify `hmmlearn` anymore:
+
+* `hmmlearn` is installed as a normal dependency via `pip`
+* its C extension (`_hmmc*.pyd` / `_hmmc*.so`) comes from the official wheel
+* MsktHMM only provides:
+
+  * a new HMM class with uMST emissions (inside the `mskt_hmm` package)
+  * the native EMMIXskew runtime (`libemmixskew`) used to compute uMST densities
+    and expectations efficiently
+
+You keep using `hmmlearn` as usual, and import the uMST HMM from `mskt_hmm`.
+
+Example:
+
+```python
+from mskt_hmm.mskt_hmm import MsktHMM 
+
+hmm = MsktHMM(
+    n_components=3,        # number of hidden states
+    n_features=d,          # dimension of the observation vectors
+    # other params as in MsktHMM class
+)
+
+hmm.fit(X, lengths=lengths)
+```
+
+---
+
 ## 5) Run tests and demo
 
 Activate your virtual environment and run:
@@ -272,13 +271,6 @@ To experiment interactively, open the Jupyter notebook:
 jupyter notebook mskt_hmm_demo.ipynb
 ```
 
-The notebook shows examples of:
-
-* fitting a **single-state** uMST model and checking equivalence with the
-  original EMMIXskew implementation,
-* fitting a **multi-state HMM** whose states are governed by multivariate
-  skew-t distributions (no mixtures inside a state),
-* comparing with Gaussian HMMs from `hmmlearn`.
 
 ---
 

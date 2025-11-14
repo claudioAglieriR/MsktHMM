@@ -3,8 +3,10 @@ from __future__ import annotations
 import os, logging, numpy as np
 from numpy.testing import assert_allclose
 import pytest
-from src.mskt_hmm.mskt_hmm import MsktHMM
-from hmmlearn import _utils, native
+from mskt_hmm.mskt_hmm import MsktHMM
+from hmmlearn import _utils          
+from mskt_hmm import native          
+
 
 # ------------------------------------------------------------------ #
 DEBUG  = bool(int(os.getenv("MSKT_DEBUG", "0")))

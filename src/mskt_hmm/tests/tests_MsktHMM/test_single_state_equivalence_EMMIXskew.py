@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 from pathlib import Path
 
-from src.mskt_hmm.mskt_hmm import MsktHMM   
+from mskt_hmm.mskt_hmm import MsktHMM   
 
 # NB: The data must be unzipped from the data_test folder to conduct this test
 HERE        = Path(__file__).resolve().parent

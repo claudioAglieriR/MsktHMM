@@ -1,0 +1,255 @@
+INFO     tests.mskt_hmm:test_multi_state.py:219 start test for FIT_ID=[101, 108, 106]
+INFO     tests.mskt_hmm:test_multi_state.py:231 sequences ready: X_fit=(7200, 3), X_pred=(7800, 3)
+INFO     tests.mskt_hmm:test_multi_state.py:242 start fit()...
+INFO     tests.mskt_hmm:test_multi_state.py:245 Fit completed. Last LL=-65021.843, iter=230
+INFO     tests.mskt_hmm:test_multi_state.py:290 Test-stream: tot_err=16 (0.21%), near=16, far=0
+INFO     tests.mskt_hmm:test_multi_state.py:293 
+ Training errors: 5 / 7200 (0.069444%)
+INFO     tests.mskt_hmm:test_multi_state.py:294    near state-change : 5 | far from state-change: 0
+
+INFO     tests.mskt_hmm:test_multi_state.py:295 
+ Test-stream errors: 16 / 7800 (0.21%)
+INFO     tests.mskt_hmm:test_multi_state.py:296     near state-change : 16 | far from state-change: 0
+
+
+
+
+
+INFO     tests.mskt_hmm:test_multi_state.py:219 start test for FIT_ID=[107, 111, 103]
+INFO     tests.mskt_hmm:test_multi_state.py:231 sequences ready: X_fit=(7200, 3), X_pred=(7800, 3)
+INFO     tests.mskt_hmm:test_multi_state.py:242 start fit()...
+INFO     tests.mskt_hmm:test_multi_state.py:245 Fit completed. Last LL=-66847.439, iter=283
+INFO     tests.mskt_hmm:test_multi_state.py:290 Test-stream: tot_err=7 (0.09%), near=7, far=0
+INFO     tests.mskt_hmm:test_multi_state.py:293 
+ Training errors: 2 / 7200 (0.027778%)
+INFO     tests.mskt_hmm:test_multi_state.py:294    near state-change : 2 | far from state-change: 0
+
+INFO     tests.mskt_hmm:test_multi_state.py:295 
+ Test-stream errors: 7 / 7800 (0.09%)
+INFO     tests.mskt_hmm:test_multi_state.py:296     near state-change : 7 | far from state-change: 0
+
+
+
+
+
+INFO     tests.mskt_hmm:test_multi_state.py:219 start test for FIT_ID=[110, 102, 109]
+INFO     tests.mskt_hmm:test_multi_state.py:231 sequences ready: X_fit=(7200, 3), X_pred=(7800, 3)
+INFO     tests.mskt_hmm:test_multi_state.py:242 start fit()...
+INFO     tests.mskt_hmm:test_multi_state.py:245 Fit completed. Last LL=-75402.325, iter=159
+INFO     tests.mskt_hmm:test_multi_state.py:290 Test-stream: tot_err=27 (0.35%), near=25, far=2
+INFO     tests.mskt_hmm:test_multi_state.py:293 
+ Training errors: 1 / 7200 (0.013889%)
+INFO     tests.mskt_hmm:test_multi_state.py:294    near state-change : 1 | far from state-change: 0
+
+INFO     tests.mskt_hmm:test_multi_state.py:295 
+ Test-stream errors: 27 / 7800 (0.35%)
+INFO     tests.mskt_hmm:test_multi_state.py:296     near state-change : 25 | far from state-change: 2
+
+
+
+
+
+INFO     tests.mskt_hmm:test_multi_state.py:219 start test for FIT_ID=[104, 105, 112]
+INFO     tests.mskt_hmm:test_multi_state.py:231 sequences ready: X_fit=(7200, 3), X_pred=(7800, 3)
+INFO     tests.mskt_hmm:test_multi_state.py:242 start fit()...
+INFO     tests.mskt_hmm:test_multi_state.py:245 Fit completed. Last LL=-74323.221, iter=185
+INFO     tests.mskt_hmm:test_multi_state.py:290 Test-stream: tot_err=27 (0.35%), near=21, far=6
+INFO     tests.mskt_hmm:test_multi_state.py:293 
+ Training errors: 5 / 7200 (0.069444%)
+INFO     tests.mskt_hmm:test_multi_state.py:294    near state-change : 5 | far from state-change: 0
+
+INFO     tests.mskt_hmm:test_multi_state.py:295 
+ Test-stream errors: 27 / 7800 (0.35%)
+INFO     tests.mskt_hmm:test_multi_state.py:296     near state-change : 21 | far from state-change: 6
+
+
+
+
+
+INFO     tests.mskt_hmm:test_multi_state.py:219 start test for FIT_ID=[101, 108, 112]
+INFO     tests.mskt_hmm:test_multi_state.py:231 sequences ready: X_fit=(7200, 3), X_pred=(7800, 3)
+INFO     tests.mskt_hmm:test_multi_state.py:242 start fit()...
+INFO     tests.mskt_hmm:test_multi_state.py:245 Fit completed. Last LL=-73587.005, iter=186
+INFO     tests.mskt_hmm:test_multi_state.py:290 Test-stream: tot_err=20 (0.26%), near=17, far=3
+INFO     tests.mskt_hmm:test_multi_state.py:293 
+ Training errors: 1 / 7200 (0.013889%)
+INFO     tests.mskt_hmm:test_multi_state.py:294    near state-change : 0 | far from state-change: 1
+
+INFO     tests.mskt_hmm:test_multi_state.py:295 
+ Test-stream errors: 20 / 7800 (0.26%)
+INFO     tests.mskt_hmm:test_multi_state.py:296     near state-change : 17 | far from state-change: 3
+
+
+
+
+
+INFO     tests.mskt_hmm:test_multi_state.py:219 start test for FIT_ID=[101, 108, 103]
+INFO     tests.mskt_hmm:test_multi_state.py:231 sequences ready: X_fit=(7200, 3), X_pred=(7800, 3)
+INFO     tests.mskt_hmm:test_multi_state.py:242 start fit()...
+INFO     tests.mskt_hmm:test_multi_state.py:245 Fit completed. Last LL=-71415.732, iter=194
+INFO     tests.mskt_hmm:test_multi_state.py:290 Test-stream: tot_err=18 (0.23%), near=16, far=2
+INFO     tests.mskt_hmm:test_multi_state.py:293 
+ Training errors: 1 / 7200 (0.013889%)
+INFO     tests.mskt_hmm:test_multi_state.py:294    near state-change : 1 | far from state-change: 0
+
+INFO     tests.mskt_hmm:test_multi_state.py:295 
+ Test-stream errors: 18 / 7800 (0.23%)
+INFO     tests.mskt_hmm:test_multi_state.py:296     near state-change : 16 | far from state-change: 2
+
+
+
+
+
+INFO     tests.mskt_hmm:test_multi_state.py:219 start test for FIT_ID=[107, 102, 106]
+INFO     tests.mskt_hmm:test_multi_state.py:231 sequences ready: X_fit=(7200, 3), X_pred=(7800, 3)
+INFO     tests.mskt_hmm:test_multi_state.py:242 start fit()...
+INFO     tests.mskt_hmm:test_multi_state.py:245 Fit completed. Last LL=-59143.502, iter=254
+INFO     tests.mskt_hmm:test_multi_state.py:290 Test-stream: tot_err=9 (0.12%), near=7, far=2
+INFO     tests.mskt_hmm:test_multi_state.py:293 
+ Training errors: 0 / 7200 (0.000000%)
+INFO     tests.mskt_hmm:test_multi_state.py:294    near state-change : 0 | far from state-change: 0
+
+INFO     tests.mskt_hmm:test_multi_state.py:295 
+ Test-stream errors: 9 / 7800 (0.12%)
+INFO     tests.mskt_hmm:test_multi_state.py:296     near state-change : 7 | far from state-change: 2
+
+
+
+
+
+INFO     tests.mskt_hmm:test_multi_state.py:219 start test for FIT_ID=[107, 102, 109]
+INFO     tests.mskt_hmm:test_multi_state.py:231 sequences ready: X_fit=(7200, 3), X_pred=(7800, 3)
+INFO     tests.mskt_hmm:test_multi_state.py:242 start fit()...
+INFO     tests.mskt_hmm:test_multi_state.py:245 Fit completed. Last LL=-63714.047, iter=255
+INFO     tests.mskt_hmm:test_multi_state.py:290 Test-stream: tot_err=11 (0.14%), near=10, far=1
+INFO     tests.mskt_hmm:test_multi_state.py:293 
+ Training errors: 1 / 7200 (0.013889%)
+INFO     tests.mskt_hmm:test_multi_state.py:294    near state-change : 1 | far from state-change: 0
+
+INFO     tests.mskt_hmm:test_multi_state.py:295 
+ Test-stream errors: 11 / 7800 (0.14%)
+INFO     tests.mskt_hmm:test_multi_state.py:296     near state-change : 10 | far from state-change: 1
+
+
+
+
+
+INFO     tests.mskt_hmm:test_multi_state.py:219 start test for FIT_ID=[110, 102, 103]
+INFO     tests.mskt_hmm:test_multi_state.py:231 sequences ready: X_fit=(7200, 3), X_pred=(7800, 3)
+INFO     tests.mskt_hmm:test_multi_state.py:242 start fit()...
+INFO     tests.mskt_hmm:test_multi_state.py:245 Fit completed. Last LL=-77225.102, iter=207
+INFO     tests.mskt_hmm:test_multi_state.py:290 Test-stream: tot_err=27 (0.35%), near=25, far=2
+INFO     tests.mskt_hmm:test_multi_state.py:293 
+ Training errors: 0 / 7200 (0.000000%)
+INFO     tests.mskt_hmm:test_multi_state.py:294    near state-change : 0 | far from state-change: 0
+
+INFO     tests.mskt_hmm:test_multi_state.py:295 
+ Test-stream errors: 27 / 7800 (0.35%)
+INFO     tests.mskt_hmm:test_multi_state.py:296     near state-change : 25 | far from state-change: 2
+
+
+
+
+
+INFO     tests.mskt_hmm:test_multi_state.py:219 start test for FIT_ID=[104, 102, 106]
+INFO     tests.mskt_hmm:test_multi_state.py:231 sequences ready: X_fit=(7200, 3), X_pred=(7800, 3)
+INFO     tests.mskt_hmm:test_multi_state.py:242 start fit()...
+INFO     tests.mskt_hmm:test_multi_state.py:245 Fit completed. Last LL=-67734.681, iter=243
+INFO     tests.mskt_hmm:test_multi_state.py:290 Test-stream: tot_err=25 (0.32%), near=19, far=6
+INFO     tests.mskt_hmm:test_multi_state.py:293 
+ Training errors: 1 / 7200 (0.013889%)
+INFO     tests.mskt_hmm:test_multi_state.py:294    near state-change : 1 | far from state-change: 0
+
+INFO     tests.mskt_hmm:test_multi_state.py:295 
+ Test-stream errors: 25 / 7800 (0.32%)
+INFO     tests.mskt_hmm:test_multi_state.py:296     near state-change : 19 | far from state-change: 6
+
+
+
+
+
+INFO     tests.mskt_hmm:test_multi_state.py:219 start test for FIT_ID=[107, 102, 103]
+INFO     tests.mskt_hmm:test_multi_state.py:231 sequences ready: X_fit=(7200, 3), X_pred=(7800, 3)
+INFO     tests.mskt_hmm:test_multi_state.py:242 start fit()...
+INFO     tests.mskt_hmm:test_multi_state.py:245 Fit completed. Last LL=-65534.231, iter=273
+INFO     tests.mskt_hmm:test_multi_state.py:290 Test-stream: tot_err=14 (0.18%), near=14, far=0
+INFO     tests.mskt_hmm:test_multi_state.py:293 
+ Training errors: 2 / 7200 (0.027778%)
+INFO     tests.mskt_hmm:test_multi_state.py:294    near state-change : 2 | far from state-change: 0
+
+INFO     tests.mskt_hmm:test_multi_state.py:295 
+ Test-stream errors: 14 / 7800 (0.18%)
+INFO     tests.mskt_hmm:test_multi_state.py:296     near state-change : 14 | far from state-change: 0
+
+
+
+
+
+INFO     tests.mskt_hmm:test_multi_state.py:219 start test for FIT_ID=[110, 111, 106]
+INFO     tests.mskt_hmm:test_multi_state.py:231 sequences ready: X_fit=(7200, 3), X_pred=(7800, 3)
+INFO     tests.mskt_hmm:test_multi_state.py:242 start fit()...
+INFO     tests.mskt_hmm:test_multi_state.py:245 Fit completed. Last LL=-72142.590, iter=350
+INFO     tests.mskt_hmm:test_multi_state.py:290 Test-stream: tot_err=45 (0.58%), near=19, far=26
+INFO     tests.mskt_hmm:test_multi_state.py:293 
+ Training errors: 1 / 7200 (0.013889%)
+INFO     tests.mskt_hmm:test_multi_state.py:294    near state-change : 1 | far from state-change: 0
+
+INFO     tests.mskt_hmm:test_multi_state.py:295 
+ Test-stream errors: 45 / 7800 (0.58%)
+INFO     tests.mskt_hmm:test_multi_state.py:296     near state-change : 19 | far from state-change: 26
+
+
+
+
+
+INFO     tests.mskt_hmm:test_multi_state.py:219 start test for FIT_ID=[107, 105, 109]
+INFO     tests.mskt_hmm:test_multi_state.py:231 sequences ready: X_fit=(7200, 3), X_pred=(7800, 3)
+INFO     tests.mskt_hmm:test_multi_state.py:242 start fit()...
+INFO     tests.mskt_hmm:test_multi_state.py:245 Fit completed. Last LL=-61750.568, iter=216
+INFO     tests.mskt_hmm:test_multi_state.py:290 Test-stream: tot_err=23 (0.29%), near=14, far=9
+INFO     tests.mskt_hmm:test_multi_state.py:293 
+ Training errors: 9 / 7200 (0.125000%)
+INFO     tests.mskt_hmm:test_multi_state.py:294    near state-change : 9 | far from state-change: 0
+
+INFO     tests.mskt_hmm:test_multi_state.py:295 
+ Test-stream errors: 23 / 7800 (0.29%)
+INFO     tests.mskt_hmm:test_multi_state.py:296     near state-change : 14 | far from state-change: 9
+
+
+
+
+
+INFO     tests.mskt_hmm:test_multi_state.py:219 start test for FIT_ID=[104, 108, 112]
+INFO     tests.mskt_hmm:test_multi_state.py:231 sequences ready: X_fit=(7200, 3), X_pred=(7800, 3)
+INFO     tests.mskt_hmm:test_multi_state.py:242 start fit()...
+INFO     tests.mskt_hmm:test_multi_state.py:245 Fit completed. Last LL=-67617.818, iter=193
+INFO     tests.mskt_hmm:test_multi_state.py:290 Test-stream: tot_err=21 (0.27%), near=17, far=4
+INFO     tests.mskt_hmm:test_multi_state.py:293 
+ Training errors: 2 / 7200 (0.027778%)
+INFO     tests.mskt_hmm:test_multi_state.py:294    near state-change : 0 | far from state-change: 2
+
+INFO     tests.mskt_hmm:test_multi_state.py:295 
+ Test-stream errors: 21 / 7800 (0.27%)
+INFO     tests.mskt_hmm:test_multi_state.py:296     near state-change : 17 | far from state-change: 4
+
+
+
+
+
+INFO     tests.mskt_hmm:test_multi_state.py:219 start test for FIT_ID=[110, 102, 112]
+INFO     tests.mskt_hmm:test_multi_state.py:231 sequences ready: X_fit=(7200, 3), X_pred=(7800, 3)
+INFO     tests.mskt_hmm:test_multi_state.py:242 start fit()...
+INFO     tests.mskt_hmm:test_multi_state.py:245 Fit completed. Last LL=-79381.607, iter=117
+INFO     tests.mskt_hmm:test_multi_state.py:290 Test-stream: tot_err=27 (0.35%), near=22, far=5
+INFO     tests.mskt_hmm:test_multi_state.py:293 
+ Training errors: 3 / 7200 (0.041667%)
+INFO     tests.mskt_hmm:test_multi_state.py:294    near state-change : 3 | far from state-change: 0
+
+INFO     tests.mskt_hmm:test_multi_state.py:295 
+ Test-stream errors: 27 / 7800 (0.35%)
+INFO     tests.mskt_hmm:test_multi_state.py:296     near state-change : 22 | far from state-change: 5
+
+
+
+
+

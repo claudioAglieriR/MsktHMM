@@ -6,8 +6,8 @@ import pytest
 import logging
 from datetime import datetime
 
-from src.mskt_hmm.mskt_hmm import MsktHMM
-from src.mskt_hmm import native  
+from mskt_hmm.mskt_hmm import MsktHMM
+from mskt_hmm import native  
 from joblib import Parallel, delayed
 
 # NB: The data must be unzipped from the data_test folder to conduct this test

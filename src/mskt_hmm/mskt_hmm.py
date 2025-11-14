@@ -1,22 +1,21 @@
-import numpy as np
-from . import _emissions, _utils
-from .base import BaseHMM
-from .utils import fill_covars
-from . import _hmmc
-import importlib, src.mskt_hmm.native as native
-from sklearn.utils import check_random_state
-from hmmlearn.base import ConvergenceMonitor
-from hmmlearn.base import ConvergenceMonitor
-import numpy as np
 import logging
-import numpy as np
-from . import native, _utils  
-from sklearn.utils import check_random_state
+import sys
+import importlib
+
 import numpy as np
 from scipy.linalg import cho_factor, cho_solve
 from scipy.stats import gamma
-import sys
+from sklearn.utils import check_random_state
 
+# --- import from hmmlearn (pacchetto esterno) ---
+from hmmlearn.base import BaseHMM, ConvergenceMonitor
+from hmmlearn.utils import fill_covars
+from hmmlearn import _emissions, _utils
+
+# --- import locale: EMMIXskew wrapper ---
+from . import native
+from . import _hmmc
+from .utils import _rle, _kmed_1d, covars_to_full
 
 _log = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
@@ -213,7 +212,7 @@ class BaseMsktHMM(_emissions._AbstractHMM):
         # --- 1. parameters flatten ---------------------------------------------
         mu_flat = self.means_.T.ravel("F")
 
-        full_cov = _utils.covars_to_full(self._covars_,
+        full_cov = covars_to_full(self._covars_,
                                          self.covariance_type,
                                          n_components=g,
                                          n_features=p)
@@ -625,66 +624,8 @@ class MsktHMM(BaseMsktHMM, BaseHMM):
         return Y
 
 
-    @staticmethod
-    def _rle(vec: np.ndarray):
-        """
-        Run-length encode an integer label vector.
 
-        Parameters
-        ----------
-        vec : ndarray, shape (n,)
-            Input labels.
 
-        Returns
-        -------
-        values : ndarray
-            Unique values in run order.
-        lengths : ndarray
-            Run lengths for each value.
-        starts : ndarray
-            Start indices of each run in the original vector.
-        """
-
-        if vec.size == 0:
-            return np.array([]), np.array([]), np.array([])
-        change = np.flatnonzero(np.diff(vec, prepend=vec[0] - 1))
-        lengths = np.diff(np.append(change, vec.size))
-        return vec[change], lengths, change
-
-    @staticmethod
-    def _kmed_1d(x: np.ndarray, k: int = 3, it_max: int = 30):
-        """
-        1D k-medians clustering using median updates and L1 assignment.
-
-        Parameters
-        ----------
-        x : ndarray, shape (n,)
-            Scalar series to cluster.
-        k : int
-            Number of clusters.
-        it_max : int
-            Maximum number of update iterations.
-
-        Returns
-        -------
-        labels : ndarray, shape (n,)
-            Cluster labels in 0..k-1.
-        centers : ndarray, shape (k,)
-            Median centers after convergence.
-        """
-
-        cent = np.quantile(x, np.linspace(0.1, 0.9, k))
-        for _ in range(it_max):
-            lab = np.abs(x[:, None] - cent[None, :]).argmin(1)
-            new_cent = np.array([np.median(x[lab == j]) for j in range(k)])
-            if np.allclose(new_cent, cent, atol=1e-6):
-                break
-            # for empty centroids
-            for j in range(k):
-                if np.isnan(new_cent[j]):
-                    new_cent[j] = cent[j] + (0.01 * np.std(x) or 1e-3)
-            cent = new_cent
-        return lab, cent
 
     
     @staticmethod
@@ -744,7 +685,7 @@ class MsktHMM(BaseMsktHMM, BaseHMM):
             med_win += 1
         x0_sm = medfilt(x0, med_win)
 
-        labels_raw, centers = self._kmed_1d(x0_sm, k=3)
+        labels_raw, centers = _kmed_1d(x0_sm, k=3)
         
         idx_sort = np.argsort(centers)
         lut = np.empty(3, dtype=np.int32)
@@ -771,7 +712,7 @@ class MsktHMM(BaseMsktHMM, BaseHMM):
         labels : ndarray, shape (n,)
             Updated labels after merges (in place semantics).
         """
-        vals, lens, starts = self._rle(labels)
+        vals, lens, starts = _rle(labels)
         for v, L, s in zip(vals, lens, starts):
             if L >= min_seg:
                 continue
@@ -1181,7 +1122,7 @@ class MsktHMM(BaseMsktHMM, BaseHMM):
         mu_f = np.asfortranarray(self.means_.T, dtype="float64")  # (p,g)
         delta_f = np.asfortranarray(self.delta_.T, dtype="float64")  # (p,g)
         sigma_f = np.asfortranarray(
-            _utils.covars_to_full(self._covars_, "full",
+            covars_to_full(self._covars_, "full",
                                   n_components=g, n_features=p
                                   ).transpose(1, 2, 0), "float64")  # (p,p,g)
 
