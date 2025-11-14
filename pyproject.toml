@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mskt-hmm"
+version = "0.1.0"
+description = "Hidden Markov Models with unrestricted multivariate skew-t emissions (uMST), built on top of hmmlearn."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { file = "LICENSE.txt" }
+authors = [
+  { name = "Claudio Aglieri Rinella" },
+]
+
+dependencies = [
+  "hmmlearn>=0.3.3",
+  "numpy>=1.24,<3.0",
+  "scipy>=1.10,<2.0",
+  "scikit-learn>=1.3,<2.0",
+  "cffi>=1.15,<2.0",
+  "pycparser>=2.21,<3.0",
+]
+
+
+[project.optional-dependencies]
+dev = [
+  "pandas>=2.0,<3.0",
+  "matplotlib>=3.7,<4.0",
+  "pytest",
+  "joblib>=1.3,<2.0",
+  "threadpoolctl>=3.1,<4.0",
+  "psycopg>=3.1,<4.0",
+  "PySide6>=6.6,<7.0",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]

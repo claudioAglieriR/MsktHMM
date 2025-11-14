@@ -1,0 +1,87 @@
+# -------------------------
+# Python bytecode / cache
+# -------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+
+# -------------------------
+# Virtual environments
+# -------------------------
+.venv/
+venv/
+*venv/
+
+# -------------------------
+# Build / packaging artifacts
+# -------------------------
+build/
+dist/
+*.egg-info/
+
+# -------------------------
+# Cache 
+# -------------------------
+*.cache
+
+# IDE / editor
+.idea/
+.vscode/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Tools
+.mypy_cache/
+.ruff_cache/
+.pytype/
+.pyre/
+.tox/
+.nox/
+
+# PyTest
+.pytest_cache/
+
+# Coverage / report
+.coverage
+htmlcov/
+
+# OS
+.DS_Store
+Thumbs.db
+
+
+# -------------------------
+# Data
+# -------------------------
+*.csv
+*.parquet
+
+
+# -------------------------
+# Outputs
+# -------------------------
+/get-pip.py*
+_backup/
+logs/
+
+# Native
+src/mskt_hmm/_hmmc*.so
+src/mskt_hmm/*.so
+src/mskt_hmm/*.dll
+src/mskt_hmm/*.dylib
+src/mskt_hmm/libemmixskew.*
+
+
+
+# EMMIXskew old files
+src/mskt_hmm/EMMIXskew/**/*.o
+src/mskt_hmm/EMMIXskew/**/*.dll
+src/mskt_hmm/EMMIXskew/**/*.so
+src/mskt_hmm/EMMIXskew/**/*.a
+src/mskt_hmm/EMMIXskew/.Rproj.user/
+src/mskt_hmm/EMMIXskew/.Rhistory
+src/mskt_hmm/EMMIXskew/EMMIXskew.Rproj
+

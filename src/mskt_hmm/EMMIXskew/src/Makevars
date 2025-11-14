@@ -1,0 +1,7 @@
+CFLAGS    = -O0 -g -Wall
+CXXFLAGS  = -O0 -g -Wall
+FFLAGS    = -O0 -g
+DLLFLAGS  = -static-libgcc
+SHLIB_LD  = $(CC)
+SHLIB_LDFLAGS = -shared -g -static-libgcc
+PKG_LIBS  = $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS)

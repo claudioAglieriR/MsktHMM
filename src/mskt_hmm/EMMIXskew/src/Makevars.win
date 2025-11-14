@@ -1,0 +1,11 @@
+# ----------- DEBUG build, niente ottimizzazione né strip ------------
+CFLAGS    = -O0 -g -Wall
+FFLAGS    = -O0 -g
+CXXFLAGS  = -O0 -g -Wall
+
+# Il linker: togliamo -s e aggiungiamo -g
+SHLIB_LD       = $(CC) -shared
+SHLIB_LDFLAGS  = -g
+
+# Librerie necessarie (lascia invariato!)
+PKG_LIBS = $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS)
