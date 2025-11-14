@@ -1,5 +1,3 @@
-Ecco una versione aggiornata del `README.md` che riflette la **strada B** (MsktHMM come pacchetto separato che dipende da `hmmlearn` installato via `pip`, senza copiare il codice sorgente di `hmmlearn` dentro la repo):
-
 ````markdown
 # MsktHMM : HMM with multivariate skew-t emissions
 
