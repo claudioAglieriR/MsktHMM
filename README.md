@@ -3,14 +3,22 @@
 `MsktHMM` adds **uMST (unrestricted multivariate skew-t)** emissions on top of
 [`hmmlearn`](https://github.com/hmmlearn/hmmlearn):
 
-- plugged into the standard `hmmlearn` forward–backward / Viterbi / EM framework  
-- works on **Windows** (prebuilt EMMIXskew DLLs included, or build locally)  
-- works on **Linux** (build EMMIXskew `.so` locally)
+- plugged into the standard `hmmlearn` forward–backward / Viterbi / EM framework,  
+- works on **Windows** (prebuilt EMMIXskew DLLs included, or build locally),  
+- works on **Linux** (build EMMIXskew `.so` locally).
 
 
 Regarding emissions: 
 - emission distribution in each state: **multivariate skew-t (Sahu–Dey–Branco, 2003)** using the hierarchical representation and truncated-t expectations. 
 - the EM framework uses the C and Fortran code of EMMIXskew, a package for the fitting of mixture of canonical fundamental skew t-distributions. EMMIXskew is developed by Sharon X. Lee and Geoffrey J. McLachlan.
+
+
+This project **does not** vendor or modify `hmmlearn` : `hmmlearn` is installed as a normal dependency via `pip`.
+MsktHMM only provides:
+- a new HMM class with uMST emissions (inside the `mskt_hmm` package).
+- the native EMMIXskew runtime (`libemmixskew`) used to compute uMST densities and expectations efficiently.
+
+You keep using `hmmlearn` as usual, and import the uMST HMM from `mskt_hmm`.
 
 ---
 
@@ -202,34 +210,7 @@ Expand-Archive -Path .\src\mskt_hmm\tests\tests_MsktHMM\data_test\test_single_st
 
 ---
 
-
-## 4) Relationship with `hmmlearn`
-
-This project **does not** vendor or modify `hmmlearn` : `hmmlearn` is installed as a normal dependency via `pip`
-MsktHMM only provides:
-
-* a new HMM class with uMST emissions (inside the `mskt_hmm` package)
-* the native EMMIXskew runtime (`libemmixskew`) used to compute uMST densities and expectations efficiently
-
-You keep using `hmmlearn` as usual, and import the uMST HMM from `mskt_hmm`.
-
-Example:
-
-```python
-from mskt_hmm.mskt_hmm import MsktHMM 
-
-hmm = MsktHMM(
-    n_components=3,        # number of hidden states
-    n_features=2,          # dimension of the observation vectors
-    # other params as in MsktHMM class
-)
-
-hmm.fit(X, lengths=lengths)
-```
-
----
-
-## 5) Run tests and demo
+## 4) Run tests and demo
 
 Activate your virtual environment and run:
 
@@ -246,7 +227,7 @@ jupyter notebook mskt_hmm_demo.ipynb
 
 ---
 
-## 6) Troubleshooting
+## 5) Troubleshooting
 
 If you see:
 
@@ -267,14 +248,14 @@ check that:
 
 ---
 
-## 7) Notes
+## 6) Notes
 
 * The HMM layer reuses `hmmlearn`’s forward–backward and Viterbi core, so
   you get the usual API (`fit`, `score`, `predict`, `sample`, …).
 * macOS is not officially supported here, but you can adapt the Linux build
   commands to produce a `.dylib` if you have a Fortran toolchain available.
 
-## 8) Current Model Limitations
+## 7) Current Model Limitations
 
 The current implementation of `MsktHMM` has a few important constraints, because of the chosen initialization procedure:
 
