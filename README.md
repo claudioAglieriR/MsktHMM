@@ -23,20 +23,10 @@ powershell
 py -m venv .venv
 .\.venv\Scripts\Activate.ps1
 py -m pip install --upgrade pip setuptools wheel
-py -m pip install -r requirements.txt
+pip install -e .[dev]
 ````
 
-> `requirements.txt` installs `hmmlearn` plus the extra libraries used in the
-> notebook and tests (numpy/scipy, scikit-learn, pandas, matplotlib, etc.).
 
-Alternatively, you can install directly from the project root:
-
-```bash
-# from the MsktHMM root
-pip install .
-# or, for development
-pip install -e .
-```
 
 ---
 
