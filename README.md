@@ -10,7 +10,7 @@
 
 Regarding emissions: 
 - emission distribution in each state: **multivariate skew-t (Sahu–Dey–Branco, 2003)** using the hierarchical representation and truncated-t expectations. 
-- the EM framework uses the C and Fortran code of EMMIXskew, a package for the fitting of mixture of canonical fundamental skew t-distributions. EMMIXskew is developed by Sharon X. Lee and Geoffrey J. McLachlan.
+- the EM framework uses the C and Fortran code of EMMIXskew, a package for the fitting of mixture of skew t-distributions. EMMIXskew is developed by Geoffrey J. McLachlan and many other researchers.
 
 
 This project **does not** vendor or modify `hmmlearn` : `hmmlearn` is installed as a normal dependency via `pip`.
