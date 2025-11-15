@@ -18,7 +18,7 @@ MsktHMM only provides:
 - a new HMM class with uMST emissions (inside the `mskt_hmm` package).
 - the native EMMIXskew runtime (`libemmixskew`) used to compute uMST densities and expectations efficiently.
 
-You keep using `hmmlearn` as usual, and import the uMST HMM from `mskt_hmm`.
+You can keep using `hmmlearn` as usual, and can import the MsktHMM from `mskt_hmm`.
 
 ---
 
@@ -264,7 +264,7 @@ The current implementation of `MsktHMM` has a few important constraints, because
   so you cannot have “crossed” or mixed orderings (e.g. one state larger on feature 0 but smaller on feature 1).
 
 - **Emission dimension restricted to 2 or 3**  
-  The initializer is currently implemented only for 2-dimensional or 3-dimensional emission vectors. Other feature dimensions are not supported by the current initializer, because it wouldn't lead to stable results.
+  The initializer is currently implemented only for 2-dimensional or 3-dimensional emission vectors. Higher feature dimensions are not supported by the current initializer, because it wouldn't lead to stable results. The univariate case is not currently supported by this repository, but adding it is a straightforward planned improvement.
 
 - **Initialization hyperparameters not yet exposed in the public API**  
   The initializer uses internal hyperparameters such as `min_seg` (minimum segment length after merging) and `med_win` (median filter window size).  
