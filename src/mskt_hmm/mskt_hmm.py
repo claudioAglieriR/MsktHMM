@@ -7,12 +7,10 @@ from scipy.linalg import cho_factor, cho_solve
 from scipy.stats import gamma
 from sklearn.utils import check_random_state
 
-# --- import from hmmlearn (pacchetto esterno) ---
 from hmmlearn.base import BaseHMM, ConvergenceMonitor
 from hmmlearn.utils import fill_covars
 from hmmlearn import _emissions, _utils
 
-# --- import locale: EMMIXskew wrapper ---
 from . import native
 from . import _hmmc
 from .utils import _rle, _kmed_1d, covars_to_full
