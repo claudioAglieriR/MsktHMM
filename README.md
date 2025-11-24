@@ -26,12 +26,11 @@ You can keep using `hmmlearn` as usual, and can import the MsktHMM from `mskt_hm
 
 - Python **3.10–3.13**
 - A C/Fortran toolchain is needed **only** if you want to (re)build the native
-  EMMIXskew library yourself. For normal Windows users the prebuilt DLLs should be enough.
+  EMMIXskew library yourself. For normal Windows users the prebuilt DLLs is enough.
 
 Create a virtual env and install the dependencies (example: Windows PowerShell):
 
 ```powershell
-powershell
 py -m venv .venv
 .\.venv\Scripts\Activate.ps1
 py -m pip install --upgrade pip setuptools wheel
