@@ -265,9 +265,6 @@ The current implementation of `MsktHMM` has a few important constraints, because
 - **Emission dimension restricted to 2 or 3**  
   The initializer is currently implemented only for 2-dimensional or 3-dimensional emission vectors. Higher feature dimensions are not supported by the current initializer, because it wouldn't lead to stable results. The univariate case is not currently supported by this repository, but adding it is a straightforward planned improvement.
 
-- **Initialization hyperparameters not yet exposed in the public API**  
-  The initializer uses internal hyperparameters such as `min_seg` (minimum segment length after merging) and `med_win` (median filter window size).  
-  These are currently fixed inside the initializer and **cannot yet be set at object construction time**. Exposing them as constructor arguments is a planned improvement, especially for users who need to tune the initializer for data with highly frequent state changes (i.e. transition matrices with lower self-transition probabilities on the diagonal).
 
 A more general and stable initialization procedure that addresses these limitations is planned as a future improvement.
 

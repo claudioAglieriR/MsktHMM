@@ -14,6 +14,14 @@ from hmmlearn import _emissions, _utils
 from . import native
 from . import _hmmc
 from .utils import _rle, _kmed_1d, covars_to_full
+from .init_config import (
+    InitConfig,
+    N_ITER_DEFAULT, TOL_DEFAULT, MIN_COVAR_DEFAULT,
+    STARTPROB_PRIOR_DEFAULT, TRANSMAT_PRIOR_DEFAULT,
+    MEANS_PRIOR_DEFAULT, MEANS_WEIGHT_DEFAULT,
+    COVARS_PRIOR_DEFAULT, COVARS_WEIGHT_DEFAULT,
+    RDMST_N_SAMPLES_DEFAULT, RDMST_DOF_DEFAULT,
+)
 
 _log = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
@@ -25,17 +33,20 @@ importlib.reload(native)
 
 __all__ = [
     "MsktHMM",
+    "InitConfig",
 ]
 
 _log = logging.getLogger(__name__)
 COVARIANCE_TYPES = frozenset(("full"))
 
+
 class BaseMsktHMM(_emissions._AbstractHMM):
 
     def __init__(self, n_components=1,
-                startprob_prior=1.0, transmat_prior=1.0,
+                startprob_prior=STARTPROB_PRIOR_DEFAULT,
+                transmat_prior=TRANSMAT_PRIOR_DEFAULT,
                 algorithm="viterbi", random_state=None,
-                n_iter=8000, tol=1e-2, verbose=False,
+                n_iter=N_ITER_DEFAULT, tol=TOL_DEFAULT, verbose=False,
                 params="stmckv", init_params="stmc",
                 implementation="log"):
         """
@@ -386,14 +397,15 @@ class SkewtMonitor(ConvergenceMonitor):
     'EMMIXcskew: An R Package for the Fitting of a Mixture of Canonical 
     Fundamental Skew t-Distributions'by Lee and McLachan.
     """
-
+    
     @property
     def converged(self):
+        iter_emskewfit2=10
         if self.iter == self.n_iter:
             return True
-        if self.iter < 10:
+        if self.iter < iter_emskewfit2:
             return False
-        rel10 = abs(self.history[-1] - self.history[-10]) < abs(self.history[-10]) * self.tol
+        rel10 = abs(self.history[-1] - self.history[-iter_emskewfit2]) < abs(self.history[-iter_emskewfit2]) * self.tol
         rel1 = abs(self.history[-1] - self.history[-2]) < abs(self.history[-2]) * self.tol
         return rel10 and rel1
     
@@ -451,12 +463,17 @@ class MsktHMM(BaseMsktHMM, BaseHMM):
 
 
     def __init__(self, n_components=1, covariance_type='full',
-                min_covar=1e-3, startprob_prior=1.0, transmat_prior=1.0,
-                means_prior=0, means_weight=0, covars_prior=1e-2,
-                covars_weight=1, algorithm="viterbi", random_state=None,
-                n_iter=20_000, tol=1e-7, verbose=False,
+                min_covar=MIN_COVAR_DEFAULT,
+                startprob_prior=STARTPROB_PRIOR_DEFAULT,
+                transmat_prior=TRANSMAT_PRIOR_DEFAULT,
+                means_prior=MEANS_PRIOR_DEFAULT,
+                means_weight=MEANS_WEIGHT_DEFAULT,
+                covars_prior=COVARS_PRIOR_DEFAULT,
+                covars_weight=COVARS_WEIGHT_DEFAULT,
+                algorithm="viterbi", random_state=None,
+                n_iter=N_ITER_DEFAULT, tol=TOL_DEFAULT, verbose=False,
                 params="stmckv", init_params="stmc",
-                implementation="log"):
+                implementation="log", init_config=None):
         """
         Initialize a multivariate skew t HMM with full covariance emissions.
 
@@ -488,6 +505,11 @@ class MsktHMM(BaseMsktHMM, BaseHMM):
             Which parameter groups to update or initialize.
         implementation : {"log","scaling"}
             Forward-backward numerical implementation.
+        init_config : InitConfig, optional
+            Hyperparameters for the robust warm-start initialiser. Defaults to
+            ``InitConfig()`` (standard values). Pass a custom ``InitConfig``
+            instance to tune the initialiser for data with faster state changes.
+            See ``InitConfig`` for parameter descriptions and valid ranges.
 
         Notes
         -----
@@ -507,6 +529,7 @@ class MsktHMM(BaseMsktHMM, BaseHMM):
         self.means_weight = means_weight
         self.covars_prior = covars_prior
         self.covars_weight = covars_weight
+        self.init_config = InitConfig() if init_config is None else init_config
         self.monitor_ = SkewtMonitor(self.tol, self.n_iter, self.verbose)
     
     
@@ -563,7 +586,7 @@ class MsktHMM(BaseMsktHMM, BaseHMM):
 
 
     @staticmethod
-    def rdmst(p, n=5000, mean=None, cov=None, nu=10, del_=None, rng=None):
+    def rdmst(p, n=RDMST_N_SAMPLES_DEFAULT, mean=None, cov=None, nu=RDMST_DOF_DEFAULT, del_=None, rng=None):
         """
         Generate samples from the unrestricted multivariate skew-t (uMST, Sahu–Dey–Branco).
 
@@ -1003,14 +1026,17 @@ class MsktHMM(BaseMsktHMM, BaseHMM):
         g = self.n_components
         if g == 1:
             return self._init_single(X)
-        self._init_robust_segments(X)
+        self._init_robust_segments(
+            X,
+            med_win=self.init_config.med_win,
+            min_seg=self.init_config.min_seg,
+            trim_q=self.init_config.trim_q,
+            n_frozen_iter=self.init_config.n_frozen_iter,
+        )
 
-    # TODO: add min_seg and med_win parameters as initialization parameters for the object
-    # A possible improvement for this repository is to expose the initialization hyperparameters
-    # min_seg and med_win, so that the robust initializer can be tuned for data with more
-    # frequent state changes.
     def _init_robust_segments(self, X: np.ndarray, *, med_win: int = 51,
-                          min_seg: int = 180, trim_q: float = 0.98, verbose:bool =False ) -> None:
+                          min_seg: int = 180, trim_q: float = 0.98,
+                          n_frozen_iter: int = 2, verbose: bool = False) -> None:
         """
         Robust multi-stage initializer for a 3 state skew t HMM.
 
@@ -1035,6 +1061,8 @@ class MsktHMM(BaseMsktHMM, BaseHMM):
             Median filter window size (will be forced to odd).
         trim_q : float
             Trimming quantile for robust fits.
+        n_frozen_iter : int
+            Number of EM iterations with frozen emission parameters.
         verbose : bool
             for debugging
         """
@@ -1066,8 +1094,8 @@ class MsktHMM(BaseMsktHMM, BaseHMM):
 
         self._stash_emission_params(means, covs, delt, dof)
 
-        # frozen labels - first two steps of EM the emission parameters are frozen
-        self._frozen_labels_ = {"labels": labels.astype(np.int32), "remain": 2}
+        if n_frozen_iter > 0:
+            self._frozen_labels_ = {"labels": labels.astype(np.int32), "remain": n_frozen_iter}
 
 
 

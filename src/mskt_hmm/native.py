@@ -60,6 +60,15 @@ ffi.cdef(
 )
 
 
+# ── numerical algorithm defaults ─────────────────────────────────────────────
+_SPD_EPS_SCALE        = 1e-5   # eigenvalue floor fraction used in _force_spd
+_SIGMA_DELTA_TOL_QUAD = 0.99   # quadratic-form upper bound in _safe_sigma_delta
+_EMMIX_NCOV           = 3      # covariance structure code for Fortran initfit (full)
+_EMMIX_MAXLOOP_SINGLE = 20     # max initfit iterations, single-component
+_EMMIX_MAXLOOP_MULTI  = 50     # max initfit iterations, multi-component
+_DOF_UPPER            = 200.0  # degrees-of-freedom cap passed to getdof_
+_INITFIT_N_COMP       = 1      # default component count for _call_initfit
+
 _DISTMAP = {"mvn": 1, "mvt": 2, "msn": 3, "mst": 4}
 
 def _sym(name: str):
@@ -162,7 +171,7 @@ LIB = _dlopen()
 
 
 
-def _force_spd(M: np.ndarray, eps_scale: float = 1e-5) -> np.ndarray:
+def _force_spd(M: np.ndarray, eps_scale: float = _SPD_EPS_SCALE) -> np.ndarray:
     """
     Project a symmetric matrix to the nearest symmetric positive definite
     matrix using an eigenvalue floor. If the input already passes a Cholesky
@@ -223,7 +232,7 @@ def _safe_sigma_delta(
     delta: np.ndarray,
     verbose: bool = False,
     *,
-    tol_quad: float = 0.99
+    tol_quad: float = _SIGMA_DELTA_TOL_QUAD
 ) -> tuple[np.ndarray, np.ndarray, bool]:
     """
     Validate and minimally repair the pair (sigma, delta) for the unrestricted
@@ -279,7 +288,8 @@ def _safe_sigma_delta(
 
 def _call_initfit(
     X: np.ndarray,
-    *, g: int = 1, ncov: int = 3, maxloop: int = 20,
+    *, g: int = _INITFIT_N_COMP, ncov: int = _EMMIX_NCOV,
+    maxloop: int = _EMMIX_MAXLOOP_SINGLE,
     clust_in: np.ndarray | None = None,
 ):
     """
@@ -380,8 +390,8 @@ def _call_initfit(
 def init_emmix_multicomp(
     X: np.ndarray, *,
     g: int,
-    ncov: int = 3,
-    maxloop: int = 50,
+    ncov: int = _EMMIX_NCOV,
+    maxloop: int = _EMMIX_MAXLOOP_MULTI,
     clust_in: np.ndarray | None = None,
     verbose: bool = False
 ):
@@ -469,7 +479,7 @@ def getdof(
     sumtau: np.ndarray,
     sumlnv: np.ndarray,
     dof:    np.ndarray,
-    upper: float = 200.0,
+    upper: float = _DOF_UPPER,
 ):
     """
     Wrapper for the Fortran getdof_ routine that updates the degrees of
@@ -523,7 +533,7 @@ def getdof(
 
 
 
-def _call_initfit_single(X: np.ndarray, *, ncov: int = 3, maxloop: int = 20):
+def _call_initfit_single(X: np.ndarray, *, ncov: int = _EMMIX_NCOV, maxloop: int = _EMMIX_MAXLOOP_SINGLE):
     """
     Low-level call to the Fortran initfit_ for the single-component case
     (g = 1). Returns flat arrays in Fortran order and the error code.
@@ -592,7 +602,7 @@ def _call_initfit_single(X: np.ndarray, *, ncov: int = 3, maxloop: int = 20):
 
 
 # -------------------------------------------------------------------------
-def init_emmix_singlecomp(X: np.ndarray, *, ncov: int = 3, maxloop: int = 20):
+def init_emmix_singlecomp(X: np.ndarray, *, ncov: int = _EMMIX_NCOV, maxloop: int = _EMMIX_MAXLOOP_SINGLE):
     """
     High-level single-component initializer for an unrestricted multivariate
     skew-t distribution. Wraps _call_initfit_single and reshapes outputs.

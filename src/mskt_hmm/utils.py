@@ -3,6 +3,10 @@ import warnings
 
 import numpy as np
 
+# ── k-medians defaults ────────────────────────────────────────────────────────
+_KMED_N_CLUSTERS = 3    # default number of clusters
+_KMED_MAX_ITER   = 30   # maximum update iterations
+
 
 def covars_to_full(covars, covariance_type, *, n_components=None, n_features=None):
     """
@@ -59,7 +63,7 @@ def _rle(vec: np.ndarray):
 
 
 
-def _kmed_1d(x: np.ndarray, k: int = 3, it_max: int = 30):
+def _kmed_1d(x: np.ndarray, k: int = _KMED_N_CLUSTERS, it_max: int = _KMED_MAX_ITER):
     """
     1D k-medians clustering using median updates and L1 assignment.
 
