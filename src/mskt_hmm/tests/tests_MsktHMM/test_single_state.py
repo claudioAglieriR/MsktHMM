@@ -232,9 +232,18 @@ class TestSingleStateMsktHMM:
         decoding in the single state case. The Viterbi path must be all zeros
         and the Viterbi log likelihood must equal the smoothing log likelihood.
         """
-        
+
         X, model, _ = TestSingleStateMsktHMM._fit_single_state_model()
         ll_score, _ = model.score_samples(X)
         ll_vit, states = model.decode(X, algorithm="viterbi")
         assert np.all(states == 0)
         assert_allclose(ll_vit, ll_score, rtol=1e-10, atol=1e-12)
+
+    def test_invalid_covariance_type_raises(self):
+        """
+        Constructing MsktHMM with covariance_type != 'full' must raise ValueError.
+        This is a design constraint: the Fortran M-step supports full covariance only.
+        """
+        for bad_type in ("diag", "tied", "spherical"):
+            with pytest.raises(ValueError, match="covariance_type"):
+                MsktHMM(n_components=2, covariance_type=bad_type)

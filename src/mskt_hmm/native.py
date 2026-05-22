@@ -10,7 +10,7 @@ ffi = cffi.FFI()
 
 ffi.cdef(
     r"""
-    /* ---------- initfit_ già presente ---------- */
+    /* ---------- initfit_ ---------- */
     void initfit_(double *y, const int *n, const int *p, const int *g,
                   const int *ncov, const int *ndist,
                   double *pro,    double *mu,     double *sigma,
@@ -144,7 +144,7 @@ def _dlopen():
                     try:
                         return ffi.dlopen(str(cand))
                     except OSError:
-                        # continua a provare altri candidati
+                        # keep trying other candidates
                         pass
 
         # fallback
@@ -628,7 +628,7 @@ def init_emmix_singlecomp(X: np.ndarray, *, ncov: int = _EMMIX_NCOV, maxloop: in
     """
     out = _call_initfit_single(X, ncov=ncov, maxloop=maxloop)
     if out is None:
-        raise RuntimeError("libemmixskew non caricata")
+        raise RuntimeError("libemmixskew not loaded")
 
     mu, sigma_flat, delta, dof, err = out
     if err != 0:

@@ -1,6 +1,5 @@
 import logging
 import sys
-import importlib
 
 import numpy as np
 from scipy.linalg import cho_factor, cho_solve
@@ -13,30 +12,26 @@ from hmmlearn import _emissions, _utils
 
 from . import native
 from . import _hmmc
-from .utils import _rle, _kmed_1d, covars_to_full
+from .utils import _rle, _kmed_1d, covars_to_full, mardia_test
 from .init_config import (
     InitConfig,
     N_ITER_DEFAULT, TOL_DEFAULT, MIN_COVAR_DEFAULT,
     STARTPROB_PRIOR_DEFAULT, TRANSMAT_PRIOR_DEFAULT,
     MEANS_PRIOR_DEFAULT, MEANS_WEIGHT_DEFAULT,
-    COVARS_PRIOR_DEFAULT, COVARS_WEIGHT_DEFAULT,
+    COVARS_PRIOR_DEFAULT, COVARS_WEIGHT_DEFAULT, DOF_UPPER_DEFAULT,
     RDMST_N_SAMPLES_DEFAULT, RDMST_DOF_DEFAULT,
 )
+from .multistart import fit_multistart
 
 _log = logging.getLogger(__name__)
-logging.basicConfig(level=logging.INFO)
-
-from sklearn.utils.validation import (
-     check_random_state)
-
-importlib.reload(native)
+_log.addHandler(logging.NullHandler())
 
 __all__ = [
     "MsktHMM",
     "InitConfig",
+    "fit_multistart",
 ]
 
-_log = logging.getLogger(__name__)
 COVARIANCE_TYPES = frozenset(("full"))
 
 
@@ -77,10 +72,12 @@ class BaseMsktHMM(_emissions._AbstractHMM):
             Whether to print convergence reports via the monitor.
         params : str
             Which parameter blocks to update during EM.
-            Supported letters: "s" (startprob), "t" (transmat), "m" (means),
-            "c" (covars), "k" (skewness), "v" (degrees of freedom).
-            With current implementation, skewness and degrees of freedom
-            always updated
+            Letters: "s" (startprob), "t" (transmat), "m" (means),
+            "c" (covars), "k" (skewness delta), "v" (degrees of freedom nu).
+            Omitting "k" keeps delta frozen at its initialized value across all
+            iterations. Omitting "v" keeps nu frozen. The Fortran M-step always
+            computes mu, Sigma, and delta jointly; omitting "k" suppresses only
+            the copy-back of the new delta to self.delta_.
         init_params : str
             Which parameter blocks to initialize before EM.
         implementation : {"log", "scaling"}
@@ -297,7 +294,7 @@ class BaseMsktHMM(_emissions._AbstractHMM):
             )
             curr_logprob += logprob
 
-        # ---- fine E-step: update counting for frozing procedure ----
+        # end of E-step: decrement the frozen-label counter
         if frozen is not None:
             frozen["remain"] -= 1
             if frozen["remain"] <= 0:
@@ -470,6 +467,7 @@ class MsktHMM(BaseMsktHMM, BaseHMM):
                 means_weight=MEANS_WEIGHT_DEFAULT,
                 covars_prior=COVARS_PRIOR_DEFAULT,
                 covars_weight=COVARS_WEIGHT_DEFAULT,
+                dof_upper=DOF_UPPER_DEFAULT,
                 algorithm="viterbi", random_state=None,
                 n_iter=N_ITER_DEFAULT, tol=TOL_DEFAULT, verbose=False,
                 params="stmckv", init_params="stmc",
@@ -485,12 +483,25 @@ class MsktHMM(BaseMsktHMM, BaseHMM):
             Must be "full". Kept as a parameter for API parity.
         min_covar : float
             Diagonal floor added to covariances for numerical stability.
+            Retained for API parity with GaussianHMM; not yet wired into
+            the M-step. Setting this has no effect on the fit.
         startprob_prior, transmat_prior : float or array-like
-            Dirichlet priors for initial state distribution and transition rows.
+            Dirichlet priors for the initial state distribution and transition
+            rows. These ARE consumed by the inherited BaseHMM._do_mstep via
+            super()._do_mstep(stats) for MAP updates of startprob_ and transmat_.
         means_prior, means_weight : float or array-like
-            Normal prior mean and precision for emission means.
+            Prior mean and precision weight for emission means.
+            Retained for API parity with GaussianHMM; not yet wired into
+            the M-step. Setting this has no effect on the fit.
         covars_prior, covars_weight : float or array-like
-            Inverse Wishart prior parameters for covariances when relevant.
+            Inverse-Wishart prior parameters for covariances.
+            Retained for API parity with GaussianHMM; not yet wired into
+            the M-step. Setting this has no effect on the fit.
+        dof_upper : float
+            Upper cap for the skew-t degrees of freedom nu in the M-step.
+            Also the value at which nu is pinned for regimes whose seed data
+            show no heavy tails (see the per-state Mardia freeze in the
+            initializer). Lower it if the data is known to be far from Gaussian.
         algorithm : {"viterbi","map"}
             Decoder used by decode.
         random_state : int or RandomState
@@ -506,7 +517,7 @@ class MsktHMM(BaseMsktHMM, BaseHMM):
         implementation : {"log","scaling"}
             Forward-backward numerical implementation.
         init_config : InitConfig, optional
-            Hyperparameters for the robust warm-start initialiser. Defaults to
+            Parameters for the robust warm-start initialiser. Defaults to
             ``InitConfig()`` (standard values). Pass a custom ``InitConfig``
             instance to tune the initialiser for data with faster state changes.
             See ``InitConfig`` for parameter descriptions and valid ranges.
@@ -523,12 +534,18 @@ class MsktHMM(BaseMsktHMM, BaseHMM):
                          tol=tol, params=params, verbose=verbose,
                          init_params=init_params,
                          implementation=implementation)
+        if covariance_type != "full":
+            raise ValueError(
+                f"covariance_type must be 'full'; got {covariance_type!r}. "
+                "MsktHMM supports only full covariance by design."
+            )
         self.covariance_type = covariance_type
         self.min_covar = min_covar
         self.means_prior = means_prior
         self.means_weight = means_weight
         self.covars_prior = covars_prior
         self.covars_weight = covars_weight
+        self.dof_upper = dof_upper
         self.init_config = InitConfig() if init_config is None else init_config
         self.monitor_ = SkewtMonitor(self.tol, self.n_iter, self.verbose)
     
@@ -545,6 +562,22 @@ class MsktHMM(BaseMsktHMM, BaseHMM):
         _utils._validate_covars(covars, self.covariance_type,
                                 self.n_components)
         self._covars_ = covars
+
+    def fit_multistart(self, X, lengths=None, *, n_restarts=10,
+                       random_state=None, perturb_scale=0.5, return_all=False):
+        """Fit several diversified restarts and return the best-scoring model.
+
+        Thin wrapper around `mskt_hmm.multistart.fit_multistart`, using this
+        instance as the configuration template. The returned model is a fresh
+        fitted instance (this one is left untouched), with a
+        `multistart_history_` attribute for diagnostics. See that function for
+        why diversity is injected through `init_config` rather than through
+        jittered initial values.
+        """
+        from .multistart import fit_multistart as _fit_multistart
+        return _fit_multistart(self, X, lengths, n_restarts=n_restarts,
+                               random_state=random_state,
+                               perturb_scale=perturb_scale, return_all=return_all)
         
 
     @staticmethod
@@ -1086,6 +1119,27 @@ class MsktHMM(BaseMsktHMM, BaseHMM):
             means, covs, delt, dof, labels
         )
 
+        # Per-state DoF freeze (Phase 2.2, addresses W1.3). A regime whose seed
+        # data show no heavy tails does not need a finite nu; pin it at
+        # dof_upper so the M-step does not chase an estimate that merely
+        # saturates at the cap (which biases Sigma). Tail heaviness is what nu
+        # models, so the gate uses Mardia's kurtosis component; the skewness
+        # component is kept for diagnostics (skew is delta's job). The test runs
+        # on untrimmed state data so heavy tails are not trimmed away first.
+        dof = np.asarray(dof, dtype=float)
+        g = self.n_components
+        alpha = 0.05
+        nu_frozen = np.zeros(g, dtype=bool)
+        mardia = []
+        for k in range(g):
+            res = mardia_test(X[labels == k])
+            mardia.append(res)
+            if res is not None and res["kurt_p"] >= alpha:
+                nu_frozen[k] = True
+                dof[k] = self.dof_upper
+        self._nu_frozen_mask_ = nu_frozen
+        self._mardia_ = mardia
+
         startprob, A = self._estimate_discrete_from_labels(labels)
         self.startprob_ = startprob
         self.startprob_init_ = startprob.copy()
@@ -1192,16 +1246,25 @@ class MsktHMM(BaseMsktHMM, BaseHMM):
             _log.info("Sigma corrected (SPD jitter) at step %s",
                       getattr(self.monitor_, "iter", "?"))
 
-        # 4) nu
-        if np.all(sumtau > p + 2):
-            self.dof_ = native.getdof(
+        # 4) nu -- update unless gated off by 'v'; honor dof_upper and the
+        #    per-state Mardia freeze mask set at init (Gaussian-tailed regimes
+        #    keep nu pinned at dof_upper instead of saturating, W1.3).
+        nu_frozen = getattr(self, "_nu_frozen_mask_", None)
+        all_frozen = nu_frozen is not None and bool(nu_frozen.all())
+        if 'v' in self.params and not all_frozen and np.all(sumtau > p + 2):
+            new_dof = np.asarray(native.getdof(
                 sumtau=sumtau, sumlnv=sumlnv,
                 dof=np.asfortranarray(self.dof_, dtype="float64"),
-            )
+                upper=self.dof_upper,
+            ), dtype="float64")
+            if nu_frozen is not None:
+                new_dof[nu_frozen] = self.dof_upper
+            self.dof_ = new_dof
 
-        # 5) copy
+        # 5) copy back -- delta is skipped when 'k' is absent from params
         self.means_ = mu_f.T
-        self.delta_ = delta_f.T
+        if 'k' in self.params:
+            self.delta_ = delta_f.T
         self._covars_ = sigma_f.transpose(2, 0, 1)
 
 

@@ -11,9 +11,10 @@ from mskt_hmm import native
 from joblib import Parallel, delayed
 
 # NB: The data must be unzipped from the data_test folder to conduct this test
-INPUT_CSV = Path(r"C:\opt\workspace\python\MsktHMM\src\mskt_hmm\tests\tests_MsktHMM\data_test\test_multi_state\parameters_distributions.csv")
-DATA_DIR  = Path(r"C:\opt\workspace\python\MsktHMM\src\mskt_hmm\tests\tests_MsktHMM\data_test\test_multi_state\simulation_data_multi_state")
-LOG_DIR = Path(r"C:\opt\workspace\python\MsktHMM\src\mskt_hmm\tests\tests_MsktHMM\log")
+HERE      = Path(__file__).resolve().parent
+INPUT_CSV = HERE / "data_test" / "test_multi_state" / "parameters_distributions.csv"
+DATA_DIR  = HERE / "data_test" / "test_multi_state" / "simulation_data_multi_state"
+LOG_DIR   = HERE / "log"
 LOG_DIR.mkdir(parents=True, exist_ok=True)
 
 logger = logging.getLogger("tests.mskt_hmm")

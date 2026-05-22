@@ -16,6 +16,8 @@ build/
 dist/
 *.egg-info/
 
+# bake_off
+bake_off/
 
 # IDE / editor
 .idea/
@@ -56,12 +58,16 @@ Thumbs.db
 /get-pip.py*
 _backup/
 logs/
+src/mskt_hmm/tests/tests_MsktHMM/log
 
 
 # Project-specific ignored directories
 src/mskt_hmm/EMMIXskew_dll/
 src/mskt_hmm/tests/tests_MsktHMM/data_test/test_multi_state/
 src/mskt_hmm/tests/tests_MsktHMM/data_test/test_single_state_equivalence/
+
+# Local-only notes (not committed, not pushed)
+Markdown/
 
 # Native
 src/mskt_hmm/_hmmc*.so
